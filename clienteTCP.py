@@ -8,7 +8,6 @@ cli.connect((host, port))
 
 while 1:
     msg = cli.recv(1024)
-    print(msg)
+    print(msg.decode())
     msg = input("Resposta: ")
     cli.send(msg.encode())
-    print('\n')

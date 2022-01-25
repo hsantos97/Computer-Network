@@ -25,7 +25,11 @@ def retornaListaRotulo(msg, rotulo):
 
 def cadastrar(chave, valor):
     novoRotulo = rotulos()
-    novoRotulo[chave] = valor
+    if(novoRotulo[chave]):
+        novoRotulo[chave].append(valor)
+    else:
+        novoRotulo[chave] = valor
+      
     return novoRotulo
 
 
@@ -44,50 +48,60 @@ def main():
             rotulo = rotulos()
             case = "\n1-Listagem de rotulos\n2-Escolher Rotulo\n3-Quantidade de caracter\n4-Cadastrar Chave/caracter\n5-Remover caracter da lista\n0-Sair"
             con.sendall(case.encode())    
-
+            
             msg = con.recv(1024)
             print(msg.decode())
             if(msg.decode() == '0'):
-                print("Fechando conexão !")
+                msgEnv = "Fechando conexão !\n"
+                print(msgEnv)
+                con.sendall(msgEnv.encode())
                 con.close()
                 break
         
-            if(msg.decode() == '1'):
-                nomeRotulo = 'Nome do rotulo:'
+            elif(msg.decode() == '2'):
+                nomeRotulo = 'Nome do rotulo:\n'
                 con.sendall(nomeRotulo.encode())
                 msg = con.recv(1024)
                 print(msg.decode())
-                retornoFun = str(retornaListaRotulo(msg.decode(), rotulo))
+                retornoFun = str(retornaListaRotulo(msg.decode(), rotulo))+"\n"
                 con.sendall(retornoFun.encode())
+                
             
-            if(msg.decode() == '2'):
-                qtd = "Quantidade: "+str(qtdCaracter(rotulo))
+            elif(msg.decode() == '3'):
+                qtd = "Quantidade: "+str(qtdCaracter(rotulo))+"\n"
                 con.sendall(qtd.encode())
+                
 
-            if(msg.decode() == '3'):
-                rot = "Rotulos:" + str(rotulo)
+            elif(msg.decode() == '1'):
+                rot = "Rotulos:" + str(rotulo)+"\n"
                 con.sendall(rot.encode())
+                
             
-            if(msg.decode() == '4'):
-                msgEnv = "Nome do rotulo: "
+            elif(msg.decode() == '4'):
+                msgEnv = "Nome do rotulo: \n"
                 con.sendall(msgEnv.encode())
                 msg = con.recv(1024)
                 chave = msg.decode()
-                msgEnv = "Caracter: "
+                msgEnv = "Caracter: \n"
                 con.sendall(msgEnv.encode())
                 msg = con.recv(1024)
                 caracter = msg.decode()
                 rotulo = cadastrar(chave, caracter)
-                cadastro = "Rotulo cadastrado: "+ str(rotulo)
+                cadastro = "Rotulo cadastrado: "+ str(rotulo)+"\n"
                 con.sendall(cadastro.encode())
                 
-            if(msg.decode() == '5'):
-                msgEnv = "Nome do rotulo: "
+                
+            elif(msg.decode() == '5'):
+                msgEnv = "Nome do rotulo: \n"
                 con.sendall(msgEnv.encode())
                 msg = con.recv(1024)
                 chave = msg.decode()
                 rotulo.pop(chave)
                 cadastro = "Rotulo removido: "+ str(rotulo)
                 con.sendall(cadastro.encode())
+            else:
+                msgEnv = "OPÇÃO NÃO ENCONTRADA\n"
+                con.sendall(msgEnv.encode()) 
+                
 
-main()          
+main()       
