@@ -23,6 +23,17 @@ def qtdCaracter(rotulos):
 
     return cont
 
+def manipulaArq(rotulo):
+    try:
+        #nome_arquivo = input('rotulos.txt')
+        arquivo = open('rotulos.txt', 'w+')
+        texto = arquivo.readlines()
+        #texto.append(input(rotulo))
+        arquivo.write(rotulo)
+    except FileNotFoundError:
+        arquivo = open('rotulos.txt', 'w+')
+
+    arquivo.close()
 
 
 def main():
@@ -32,14 +43,33 @@ def main():
 
     while(1):
         rotulo = rotulos()
+        
         msg, endereco = server_sock.recvfrom(2048)
-        print('Mensagem do {}: {}'.format(str(endereco), msg.decode()))
-        msg = msg.decode()
-        msgSaida = str(retornaListaRotulo(msg, rotulo))
-        msgSaida += "\nQuantidade de caracter: " + str(qtdCaracter(rotulo))
-        msgSaida += "\nListagem dos rotulos: " + str(rotulo)
-        server_sock.sendto(msgSaida.encode(), endereco)
 
-    server_sock.close()
+        case = "\n1-Listagem de rotulos\n2-Escolher Rotulo\n3-Quantidade de caracter\n4-Cadastrar Chave/caracter\n5-Remover um caracter da lista\n0-Sair"
+        server_sock.sendto(case.encode(), endereco)
+
+        msg, endereco = server_sock.recvfrom(2048)
+
+        if(msg == 1):
+            msg, endereco = server_sock.recvfrom(2048)
+            msgSaida = str(retornaListaRotulo(msg, rotulo))
+            server_sock.sendto(msgSaida.encode(), endereco)
+
+        print('Mensagem do {}: {}'.format(str(endereco), msg.decode()))
+        
+
+        if(msg == 0):
+            server_sock.close()
+        if(msg == 2):
+            msgSaida = "\nQuantidade de caracter: " + str(qtdCaracter(rotulo))
+            server_sock.sendto(msgSaida.encode(), endereco)
+        if(msg == 3):
+            msgSaida = "\nListagem dos rotulos: " + str(rotulo)
+            server_sock.sendto(msgSaida.encode(), endereco)
+
+        #manipulaArq(str(rotulo))
+
+    
 
 main()
