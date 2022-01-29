@@ -9,5 +9,7 @@ cli.connect((host, port))
 while 1:
     msg = cli.recv(1024)
     print(msg.decode())
+    if(msg.decode() == "Fechando conexão !\n"):
+        exit()
     msg = input("Resposta: ")
     cli.send(msg.encode())

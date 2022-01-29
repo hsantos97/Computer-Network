@@ -50,13 +50,12 @@ def main():
     serv.bind((host, port))
     serv.listen()
 
-    #while 1:
+    rotulo = rotulos()
     con, adr = serv.accept()
+    case = "\n1-Listagem de rotulos\n2-Escolher Rotulo\n3-Quantidade de caracter\n4-Cadastrar Chave/caracter\n5-Remover caracter da lista\n0-Sair"
+    con.sendall(case.encode())
     while 1:
-        rotulo = rotulos()
-        case = "\n1-Listagem de rotulos\n2-Escolher Rotulo\n3-Quantidade de caracter\n4-Cadastrar Chave/caracter\n5-Remover caracter da lista\n0-Sair"
-        con.sendall(case.encode())
-
+        
         msg = con.recv(1024)
         print(msg.decode())
 
@@ -65,24 +64,24 @@ def main():
             print(msgEnv)
             con.sendall(msgEnv.encode())
             con.close()
-            break
+            exit()
     
         elif(msg.decode() == '2'):
             nomeRotulo = 'Nome do rotulo:\n'
             con.sendall(nomeRotulo.encode())
             msg = con.recv(1024)
             print(msg.decode())
-            retornoFun = str(retornaListaRotulo(msg.decode(), rotulo))+"\n"
+            retornoFun = str(retornaListaRotulo(msg.decode(), rotulo))+"\n"+case
             con.sendall(retornoFun.encode())
             
         
-        elif(msg.decode() == '3'):
-            qtd = "Quantidade: "+str(qtdCaracter(rotulo))+"\n"
+        elif(msg.decode() == '3'):            
+            qtd = "Quantidade: "+str(qtdCaracter(rotulo))+"\n"+case
             con.sendall(qtd.encode())
             
 
         elif(msg.decode() == '1'):
-            rot = "Rotulos:" + str(rotulo)+"\n"
+            rot = "Rotulos:" + str(rotulo)+"\n"+case
             con.sendall(rot.encode())
             
         
@@ -96,7 +95,7 @@ def main():
             msg = con.recv(1024)
             caracter = msg.decode()
             rotulo = cadastrar(chave, caracter)
-            cadastro = "Rotulo cadastrado: "+ str(rotulo)+"\n"
+            cadastro = "Rotulo cadastrado: "+ str(rotulo)+"\n"+case
             con.sendall(cadastro.encode())
             
             
@@ -106,7 +105,7 @@ def main():
             msg = con.recv(1024)
             chave = msg.decode()
             remove = remover(chave)
-            msgEnv = str(remove)
+            msgEnv = str(remove)+case
             con.sendall(msgEnv.encode())
 
 
