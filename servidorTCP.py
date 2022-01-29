@@ -1,16 +1,5 @@
 from socket import *
 
-def rotulos():
-    rotulo = {
-    'dinheiro':['U+1F4B0', 'U+1F4B8', 'U+1F911', 'U+3438'],
-    'rato':['U+1F401', 'U+1F42D', 'U+1F5B1', 'U+1FAA4'],
-    'cachorro':['U+1F415', 'U+1F436', 'U+1F9AE', 'U+1F32D'],
-    'gato':['U+1F408', 'U+1F431', 'U+1F638', 'U+1F639', 'U+1F63B', 'U+1F640'],
-    'macaco':['U+1F412', 'U+1F648', 'U+1F649', 'U+1F64A'],
-    'estrela':['U+2605', 'U+2606', 'U+269D', 'U+272F', 'U+2730']
-    }
-    return rotulo
-
 def qtdCaracter(rotulos):
     cont = 0
     for chave in rotulos.keys():
@@ -23,20 +12,20 @@ def retornaListaRotulo(msg, rotulo):
         if(chave == msg):
             return rotulo[chave]
 
-def cadastrar(chave, valor):
-    novoRotulo = rotulos()
-    if chave in novoRotulo:
-        novoRotulo[chave].append(valor)
+def cadastrar(chave, valor, rotulo):
+    
+    if chave in rotulo:
+        rotulo[chave].append(valor)
     else:
-        novoRotulo[chave] = valor
-      
-    return novoRotulo
+        rotulo[chave] = [valor]
+        
+    return rotulo
 
-def remover(chave):
-    novoRotulo = rotulos()
-    if chave in novoRotulo:
-        novoRotulo.pop(chave)
-        return novoRotulo
+def remover(chave, rotulo):
+    
+    if chave in rotulo:
+        rotulo.pop(chave)
+        return rotulo
     else:
         return "Chave não encontrada!\n"
 
@@ -49,13 +38,21 @@ def main():
     serv = socket(AF_INET, SOCK_STREAM)
     serv.bind((host, port))
     serv.listen()
+ 
+    rotulo = {
+    'dinheiro':['U+1F4B0', 'U+1F4B8', 'U+1F911', 'U+3438'],
+    'rato':['U+1F401', 'U+1F42D', 'U+1F5B1', 'U+1FAA4'],
+    'cachorro':['U+1F415', 'U+1F436', 'U+1F9AE', 'U+1F32D'],
+    'gato':['U+1F408', 'U+1F431', 'U+1F638', 'U+1F639', 'U+1F63B', 'U+1F640'],
+    'macaco':['U+1F412', 'U+1F648', 'U+1F649', 'U+1F64A'],
+    'estrela':['U+2605', 'U+2606', 'U+269D', 'U+272F', 'U+2730']
+    }
 
-    rotulo = rotulos()
     con, adr = serv.accept()
     case = "\n1-Listagem de rotulos\n2-Escolher Rotulo\n3-Quantidade de caracter\n4-Cadastrar Chave/caracter\n5-Remover caracter da lista\n0-Sair"
     con.sendall(case.encode())
     while 1:
-        
+
         msg = con.recv(1024)
         print(msg.decode())
 
@@ -94,7 +91,7 @@ def main():
             con.sendall(msgEnv.encode())
             msg = con.recv(1024)
             caracter = msg.decode()
-            rotulo = cadastrar(chave, caracter)
+            rotulo = cadastrar(chave, caracter, rotulo)
             cadastro = "Rotulo cadastrado: "+ str(rotulo)+"\n"+case
             con.sendall(cadastro.encode())
             
@@ -104,8 +101,8 @@ def main():
             con.sendall(msgEnv.encode())
             msg = con.recv(1024)
             chave = msg.decode()
-            remove = remover(chave)
-            msgEnv = str(remove)+case
+            rotulo = remover(chave, rotulo)
+            msgEnv = str(rotulo)+case
             con.sendall(msgEnv.encode())
 
 
