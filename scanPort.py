@@ -7,13 +7,13 @@ if len(sys.argv) < 2:
 
 target = sys.argv[1]
 print('Escaneando host com ip {}'.format(target))
-
+#contador para portas
 abertas  = 0
 fechadas = 0
    
 for porta in range(1, 65535): 
     c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    c.settimeout(5)  
+    c.settimeout(1)  
     r = c.connect_ex((target, porta))
 
     if r == 0:
